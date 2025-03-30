@@ -47,12 +47,14 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
     prescriptions.find((p) => p.id === initialPrescription.id) ||
     initialPrescription;
 
+  // Not the real delete, just a confirmation dialog will be shown
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setShowDeleteAlert(true);
   };
 
+  // Real delete, will be called after confirmation
   const handleConfirmDelete = () => {
     try {
       onDelete(prescription.id);
@@ -63,6 +65,7 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
     }
   };
 
+  // Triggers when the auto-refill checkbox is checked or unchecked
   const handleAutoRefillChange = (checked: boolean) => {
     try {
       updatePrescription(prescription.id, { autoRefill: checked });
@@ -84,68 +87,43 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6 py-2 sm:py-4">
-            {/* Left Column */}
-            <div className="space-y-1.5 sm:space-y-4">
-              <div className="space-y-1.5 sm:space-y-3">
-                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
-                  <p className="text-indigo-200 text-xs sm:text-sm">Quantity</p>
-                  <p className="text-white text-sm sm:text-lg font-medium">
-                    {prescription.quantity}
-                  </p>
-                </div>
-                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
-                  <p className="text-indigo-200 text-xs sm:text-sm">
-                    Date Filled
-                  </p>
-                  <p className="text-white text-sm sm:text-lg font-medium">
-                    {prescription.dateFilled}
-                  </p>
-                </div>
-                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
-                  <p className="text-indigo-200 text-xs sm:text-sm">Refills</p>
-                  <p className="text-white text-sm sm:text-lg font-medium">
-                    {prescription.refills}
-                  </p>
-                </div>
-                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
-                  <p className="text-indigo-200 text-xs sm:text-sm">Category</p>
-                  <p className="text-white text-sm sm:text-lg font-medium">
-                    {prescription.category}
-                  </p>
-                </div>
+          {/* Prescription Details rendered in a grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6">
+            {/* Left Column Details */}
+            <div className="space-y-4">
+              <div className="space-y-4">
+                <DetailCard label="Quantity" text={prescription.quantity} />
+                <DetailCard
+                  label="Date Filled"
+                  text={prescription.dateFilled}
+                />
+                <DetailCard label="Refills" text={prescription.refills} />
+                <DetailCard label="Category" text={prescription.category} />
               </div>
             </div>
 
-            {/* Right Column */}
-            <div className="space-y-1.5 sm:space-y-4">
-              <div className="space-y-1.5 sm:space-y-3">
-                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
-                  <p className="text-indigo-200 text-xs sm:text-sm">Status</p>
-                  <p className="text-white text-sm sm:text-lg font-medium">
-                    <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs sm:text-sm ${
-                        prescription.active
-                          ? 'bg-green-500/20 text-green-300'
-                          : 'bg-red-500/20 text-red-300'
-                      }`}
-                    >
-                      {prescription.active ? 'Active' : 'Inactive'}
-                    </span>
-                  </p>
-                </div>
-                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
-                  <p className="text-indigo-200 text-xs sm:text-sm">
-                    Instructions
-                  </p>
-                  <p className="text-white text-sm sm:text-lg font-medium">
-                    {prescription.instructions}
-                  </p>
-                </div>
-                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
-                  <p className="text-indigo-200 text-xs sm:text-sm">
-                    Auto-refill
-                  </p>
+            {/* Right Column Details */}
+            <div className="space-y-4">
+              <div className="space-y-4">
+                {/* Status Card */}
+                <DetailCard label="Status">
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs sm:text-sm ${
+                      prescription.active
+                        ? 'bg-green-500/20 text-green-300'
+                        : 'bg-red-500/20 text-red-300'
+                    }`}
+                  >
+                    {prescription.active ? 'Active' : 'Inactive'}
+                  </span>
+                </DetailCard>
+                {/* Instructions Card */}
+                <DetailCard
+                  label="Instructions"
+                  text={prescription.instructions}
+                />
+                {/* Auto-refill Card */}
+                <DetailCard label="Auto-refill">
                   <div className="flex items-center space-x-2 mt-1 sm:mt-2">
                     {prescription.autoRefillEligible ? (
                       <Checkbox
@@ -170,11 +148,9 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
                       </label>
                     )}
                   </div>
-                </div>
-                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
-                  <p className="text-indigo-200 text-xs sm:text-sm">
-                    Notify Refill
-                  </p>
+                </DetailCard>
+                {/* Notify Refill Card */}
+                <DetailCard label="Notify Refill">
                   <p className="text-white text-sm sm:text-lg font-medium">
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs sm:text-sm ${
@@ -186,11 +162,12 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
                       {prescription.notifyRefill ? 'Yes' : 'No'}
                     </span>
                   </p>
-                </div>
+                </DetailCard>
               </div>
             </div>
           </div>
 
+          {/* Delete Button */}
           <div className="flex justify-end gap-2 mt-2 sm:mt-6 pt-2 sm:pt-4 border-t border-indigo-700/50">
             <Button
               type="button"
@@ -205,6 +182,7 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
         </DialogContent>
       </Dialog>
 
+      {/* Delete Confirmation Dialog opens when the delete button is clicked initially */}
       <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
         <AlertDialogContent className="bg-indigo-800/90 backdrop-blur-sm border-indigo-700 max-w-[95vw] sm:max-w-md mx-4">
           <AlertDialogHeader>
@@ -232,3 +210,25 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
     </>
   );
 };
+
+interface DetailCardProps {
+  label: string;
+  text?: string | number;
+  children?: React.ReactNode;
+}
+
+/**
+ * Prescription Detail Card Component
+ * Displays a label and either a text or children content.
+ * For use in the PrescriptionDialog component only.
+ */
+const DetailCard: React.FC<DetailCardProps> = ({ label, text, children }) => (
+  <div className="space-y-1 bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
+    <p className="text-indigo-200 text-xs sm:text-sm">{label}:</p>
+    {text ? (
+      <p className="text-white text-sm sm:text-lg font-medium">{text}</p>
+    ) : (
+      children
+    )}
+  </div>
+);

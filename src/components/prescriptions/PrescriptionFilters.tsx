@@ -34,27 +34,27 @@ export const PrescriptionFilters: React.FC = () => {
   // Apply filters whenever any filter state changes
   useEffect(() => {
     try {
-      let result = [...initialPrescriptions].sort((a, b) =>
-        a.name.localeCompare(b.name)
-      );
+      let result = [...initialPrescriptions];
 
-      if (filterCategory !== 'All')
+      // Apply category filter
+      if (filterCategory !== 'All') {
         result = result.filter((p) => p.category === filterCategory);
-      if (filterActive !== null)
+      }
+      // Apply status filter
+      if (filterActive !== null) {
         result = result.filter((p) => p.active === filterActive);
-
+      }
+      // Sort alphabetically
+      result.sort((a, b) => a.name.localeCompare(b.name));
       setPrescriptions(result);
     } catch (error) {
+      console.error('Filter application error:', error);
       toast.error('Failed to apply filters');
-      // Reset to initial state on error
-      setFilterCategory('All');
-      setFilterActive(null);
-      setPrescriptions(
-        [...initialPrescriptions].sort((a, b) => a.name.localeCompare(b.name))
-      );
+      handleResetFilters();
     }
   }, [filterCategory, filterActive, setPrescriptions]);
 
+  // When the reset button is clicked, reset the filters to the initial state
   const handleResetFilters = () => {
     try {
       setFilterCategory('All');
@@ -63,25 +63,27 @@ export const PrescriptionFilters: React.FC = () => {
         [...initialPrescriptions].sort((a, b) => a.name.localeCompare(b.name))
       );
     } catch (error) {
+      console.error('Filter reset error:', error);
       toast.error('Failed to reset filters');
     }
   };
 
   return (
-    <div className="bg-indigo-800 p-3 md:p-4 rounded-lg shadow-lg mb-4 md:mb-6 border-2 border-indigo-400">
-      <h2 className="text-white tracking-wide font-medium text-base md:text-lg mb-3">
-        Filters
+    <div className="bg-indigo-800 rounded-lg shadow-lg mb-4 md:mb-6 p-3 md:p-4 border-2 border-indigo-400">
+      <h2 className="text-white/90 font-medium tracking-tight text-base md:text-lg mb-3">
+        Prescription Filters
       </h2>
+      <div className="h-px bg-gradient-to-r from-transparent via-indigo-100/75 to-transparent mb-4" />
+
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 items-start sm:items-center">
         {/* Category Filter */}
-        <div className="space-y-1.5 md:space-y-2 w-full sm:w-auto">
+        <div className="w-full sm:w-auto space-y-1 md:space-y-1.5">
           <Label
             htmlFor="category-filter"
-            className="text-white text-sm md:text-base"
+            className="text-white/90 text-sm md:text-base"
           >
             Category:
           </Label>
-          {/* Select component for category filter */}
           <Select value={filterCategory} onValueChange={setFilterCategory}>
             <SelectTrigger
               id="category-filter"
@@ -103,14 +105,13 @@ export const PrescriptionFilters: React.FC = () => {
         </div>
 
         {/* Status Filter */}
-        <div className="space-y-1.5 md:space-y-2 w-full sm:w-auto">
+        <div className="w-full sm:w-auto space-y-1 md:space-y-1.5">
           <Label
             htmlFor="status-filter"
-            className="text-white text-sm md:text-base"
+            className="text-white/90 text-sm md:text-base"
           >
             Status:
           </Label>
-          {/* Select component for status filter */}
           <Select
             value={filterActive === null ? 'All' : filterActive.toString()}
             onValueChange={(value) =>
@@ -135,11 +136,11 @@ export const PrescriptionFilters: React.FC = () => {
         </div>
 
         {/* Reset Filters Button */}
-        <div className="space-y-1.5 md:space-y-2 w-full sm:w-auto">
+        <div className="mt-2 w-full sm:w-auto space-y-1 md:space-y-1.5">
           <Label className="text-transparent">Reset</Label>
           <button
             onClick={handleResetFilters}
-            className="w-full sm:w-auto p-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-500 transition-colors cursor-pointer border-2 border-indigo-400"
+            className="w-full sm:w-[120px] h-[40px] bg-indigo-600 text-white text-sm rounded hover:bg-indigo-500 transition-colors border-2 border-indigo-400 flex items-center justify-center cursor-pointer"
           >
             Reset Filters
           </button>
