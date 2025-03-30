@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Select,
   SelectContent,
@@ -11,6 +11,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { usePrescriptions } from './context/PrescriptionsContext';
 import { initialPrescriptions } from './data/mockPrescriptions';
+import { toast } from 'sonner';
 
 /**
  * Prescription Filters Component
@@ -31,35 +32,60 @@ export const PrescriptionFilters: React.FC = () => {
   );
 
   // Apply filters whenever any filter state changes
-  React.useEffect(() => {
-    let result = [...initialPrescriptions].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+  useEffect(() => {
+    try {
+      let result = [...initialPrescriptions].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
 
-    if (filterCategory !== 'All')
-      result = result.filter((p) => p.category === filterCategory);
-    if (filterActive !== null)
-      result = result.filter((p) => p.active === filterActive);
+      if (filterCategory !== 'All')
+        result = result.filter((p) => p.category === filterCategory);
+      if (filterActive !== null)
+        result = result.filter((p) => p.active === filterActive);
 
-    setPrescriptions(result);
+      setPrescriptions(result);
+    } catch (error) {
+      toast.error('Failed to apply filters');
+      // Reset to initial state on error
+      setFilterCategory('All');
+      setFilterActive(null);
+      setPrescriptions(
+        [...initialPrescriptions].sort((a, b) => a.name.localeCompare(b.name))
+      );
+    }
   }, [filterCategory, filterActive, setPrescriptions]);
 
+  const handleResetFilters = () => {
+    try {
+      setFilterCategory('All');
+      setFilterActive(null);
+      setPrescriptions(
+        [...initialPrescriptions].sort((a, b) => a.name.localeCompare(b.name))
+      );
+    } catch (error) {
+      toast.error('Failed to reset filters');
+    }
+  };
+
   return (
-    <div className="bg-indigo-800 p-4 rounded-lg shadow-lg mb-6">
-      <h2 className="text-white tracking-wide font-medium text-lg mb-3">
+    <div className="bg-indigo-800 p-3 md:p-4 rounded-lg shadow-lg mb-4 md:mb-6 border-2 border-indigo-400">
+      <h2 className="text-white tracking-wide font-medium text-base md:text-lg mb-3">
         Filters
       </h2>
-      <div className="flex flex-wrap gap-4 items-center">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 items-start sm:items-center">
         {/* Category Filter */}
-        <div className="space-y-2">
-          <Label htmlFor="category-filter" className="text-white">
-            Category
+        <div className="space-y-1.5 md:space-y-2 w-full sm:w-auto">
+          <Label
+            htmlFor="category-filter"
+            className="text-white text-sm md:text-base"
+          >
+            Category:
           </Label>
           {/* Select component for category filter */}
           <Select value={filterCategory} onValueChange={setFilterCategory}>
             <SelectTrigger
               id="category-filter"
-              className="w-[180px] bg-indigo-600 text-white border-indigo-600"
+              className="w-full sm:w-[180px] bg-indigo-600 text-white border-indigo-600 text-sm md:text-base"
             >
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
@@ -77,9 +103,12 @@ export const PrescriptionFilters: React.FC = () => {
         </div>
 
         {/* Status Filter */}
-        <div className="space-y-2">
-          <Label htmlFor="status-filter" className="text-white">
-            Status
+        <div className="space-y-1.5 md:space-y-2 w-full sm:w-auto">
+          <Label
+            htmlFor="status-filter"
+            className="text-white text-sm md:text-base"
+          >
+            Status:
           </Label>
           {/* Select component for status filter */}
           <Select
@@ -90,7 +119,7 @@ export const PrescriptionFilters: React.FC = () => {
           >
             <SelectTrigger
               id="status-filter"
-              className="w-[180px] bg-indigo-600 text-white border-indigo-600"
+              className="w-full sm:w-[180px] bg-indigo-600 text-white border-indigo-600 text-sm md:text-base"
             >
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
@@ -106,19 +135,11 @@ export const PrescriptionFilters: React.FC = () => {
         </div>
 
         {/* Reset Filters Button */}
-        <div className="space-y-2">
+        <div className="space-y-1.5 md:space-y-2 w-full sm:w-auto">
           <Label className="text-transparent">Reset</Label>
           <button
-            onClick={() => {
-              setFilterCategory('All');
-              setFilterActive(null);
-              setPrescriptions(
-                [...initialPrescriptions].sort((a, b) =>
-                  a.name.localeCompare(b.name)
-                )
-              );
-            }}
-            className="p-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-500 transition-colors cursor-pointer"
+            onClick={handleResetFilters}
+            className="w-full sm:w-auto p-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-500 transition-colors cursor-pointer border-2 border-indigo-400"
           >
             Reset Filters
           </button>

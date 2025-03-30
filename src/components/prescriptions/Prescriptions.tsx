@@ -7,6 +7,7 @@ import {
   PrescriptionsProvider,
   usePrescriptions,
 } from './context/PrescriptionsContext';
+import { ErrorBoundary } from '@/components';
 
 /**
  * PrescriptionsContent Component
@@ -23,14 +24,13 @@ const PrescriptionsContent: React.FC = () => {
 
     const lowQuantityMeds = prescriptions
       .filter((p) => p.quantity < 5 && p.active)
-      .map((p) => `${p.name} (${p.quantity} remaining)`);
+      .map((p) => `${p.name}: ${p.quantity}`);
 
     if (lowQuantityMeds.length > 0) {
       toast.warning('Low Quantity Alert', {
         description: (
-          <div className="mt-2">
-            <p className="mb-2">The following medications are running low:</p>
-            <ul className="list-disc pl-4 space-y-1">
+          <div className="mt-2 text-md tracking-wide">
+            <ul className="list-disc pl-4 space-y-2">
               {lowQuantityMeds.map((med, index) => (
                 <li key={index}>{med}</li>
               ))}
@@ -46,7 +46,7 @@ const PrescriptionsContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-indigo-500 to-violet-600 p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <PrescriptionFilters />
         <PrescriptionCabinet />
       </div>
@@ -62,8 +62,10 @@ const PrescriptionsContent: React.FC = () => {
  */
 export const Prescriptions: React.FC = () => {
   return (
-    <PrescriptionsProvider>
-      <PrescriptionsContent />
-    </PrescriptionsProvider>
+    <ErrorBoundary>
+      <PrescriptionsProvider>
+        <PrescriptionsContent />
+      </PrescriptionsProvider>
+    </ErrorBoundary>
   );
 };

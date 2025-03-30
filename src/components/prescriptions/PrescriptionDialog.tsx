@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -20,6 +21,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { Prescription } from './prescriptions.types';
+import { toast } from 'sonner';
 
 interface PrescriptionDialogProps {
   prescription: Prescription;
@@ -52,49 +54,63 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
   };
 
   const handleConfirmDelete = () => {
-    onDelete(prescription.id);
-    onClose();
+    try {
+      onDelete(prescription.id);
+      onClose();
+    } catch (error) {
+      onClose();
+      toast.error('Failed to delete prescription');
+    }
   };
 
   const handleAutoRefillChange = (checked: boolean) => {
-    updatePrescription(prescription.id, { autoRefill: checked });
+    try {
+      updatePrescription(prescription.id, { autoRefill: checked });
+    } catch (error) {
+      toast.error('Failed to update auto-refill status');
+    }
   };
 
   return (
     <>
       <Dialog open={true} onOpenChange={onClose}>
-        <DialogContent className="bg-indigo-800/90 backdrop-blur-sm border-indigo-700 max-w-2xl">
-          <DialogHeader className="border-b border-indigo-700/50 pb-4">
-            <DialogTitle className="text-2xl font-semibold text-white">
+        <DialogContent className="bg-indigo-800/90 backdrop-blur-sm border-indigo-700 max-w-[95vw] sm:max-w-2xl mx-auto">
+          <DialogHeader className="border-b border-indigo-700/50 pb-2 sm:pb-4">
+            <DialogTitle className="text-lg sm:text-2xl font-semibold text-white">
               {prescription.name}
             </DialogTitle>
+            <DialogDescription className="text-indigo-200 text-xs sm:text-sm">
+              View and manage prescription details
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6 py-2 sm:py-4">
             {/* Left Column */}
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <div className="bg-indigo-700/30 p-3 rounded-lg">
-                  <p className="text-indigo-200 text-sm">Quantity</p>
-                  <p className="text-white text-lg font-medium">
+            <div className="space-y-1.5 sm:space-y-4">
+              <div className="space-y-1.5 sm:space-y-3">
+                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
+                  <p className="text-indigo-200 text-xs sm:text-sm">Quantity</p>
+                  <p className="text-white text-sm sm:text-lg font-medium">
                     {prescription.quantity}
                   </p>
                 </div>
-                <div className="bg-indigo-700/30 p-3 rounded-lg">
-                  <p className="text-indigo-200 text-sm">Date Filled</p>
-                  <p className="text-white text-lg font-medium">
+                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
+                  <p className="text-indigo-200 text-xs sm:text-sm">
+                    Date Filled
+                  </p>
+                  <p className="text-white text-sm sm:text-lg font-medium">
                     {prescription.dateFilled}
                   </p>
                 </div>
-                <div className="bg-indigo-700/30 p-3 rounded-lg">
-                  <p className="text-indigo-200 text-sm">Refills</p>
-                  <p className="text-white text-lg font-medium">
+                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
+                  <p className="text-indigo-200 text-xs sm:text-sm">Refills</p>
+                  <p className="text-white text-sm sm:text-lg font-medium">
                     {prescription.refills}
                   </p>
                 </div>
-                <div className="bg-indigo-700/30 p-3 rounded-lg">
-                  <p className="text-indigo-200 text-sm">Category</p>
-                  <p className="text-white text-lg font-medium">
+                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
+                  <p className="text-indigo-200 text-xs sm:text-sm">Category</p>
+                  <p className="text-white text-sm sm:text-lg font-medium">
                     {prescription.category}
                   </p>
                 </div>
@@ -102,13 +118,13 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
             </div>
 
             {/* Right Column */}
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <div className="bg-indigo-700/30 p-3 rounded-lg">
-                  <p className="text-indigo-200 text-sm">Status</p>
-                  <p className="text-white text-lg font-medium">
+            <div className="space-y-1.5 sm:space-y-4">
+              <div className="space-y-1.5 sm:space-y-3">
+                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
+                  <p className="text-indigo-200 text-xs sm:text-sm">Status</p>
+                  <p className="text-white text-sm sm:text-lg font-medium">
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-sm ${
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs sm:text-sm ${
                         prescription.active
                           ? 'bg-green-500/20 text-green-300'
                           : 'bg-red-500/20 text-red-300'
@@ -118,15 +134,19 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
                     </span>
                   </p>
                 </div>
-                <div className="bg-indigo-700/30 p-3 rounded-lg">
-                  <p className="text-indigo-200 text-sm">Instructions</p>
-                  <p className="text-white text-lg font-medium">
+                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
+                  <p className="text-indigo-200 text-xs sm:text-sm">
+                    Instructions
+                  </p>
+                  <p className="text-white text-sm sm:text-lg font-medium">
                     {prescription.instructions}
                   </p>
                 </div>
-                <div className="bg-indigo-700/30 p-3 rounded-lg">
-                  <p className="text-indigo-200 text-sm">Auto-refill</p>
-                  <div className="flex items-center space-x-2 mt-2">
+                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
+                  <p className="text-indigo-200 text-xs sm:text-sm">
+                    Auto-refill
+                  </p>
+                  <div className="flex items-center space-x-2 mt-1 sm:mt-2">
                     {prescription.autoRefillEligible ? (
                       <Checkbox
                         id="auto-refill"
@@ -138,7 +158,7 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
                     ) : (
                       <label
                         htmlFor="auto-refill"
-                        className={`text-lg font-medium ${
+                        className={`text-sm sm:text-lg font-medium ${
                           prescription.autoRefillEligible
                             ? 'text-white'
                             : 'text-gray-400'
@@ -151,11 +171,13 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
                     )}
                   </div>
                 </div>
-                <div className="bg-indigo-700/30 p-3 rounded-lg">
-                  <p className="text-indigo-200 text-sm">Notify Refill</p>
-                  <p className="text-white text-lg font-medium">
+                <div className="bg-indigo-700/30 p-2 sm:p-3 rounded-lg border border-indigo-600/50">
+                  <p className="text-indigo-200 text-xs sm:text-sm">
+                    Notify Refill
+                  </p>
+                  <p className="text-white text-sm sm:text-lg font-medium">
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-sm ${
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs sm:text-sm ${
                         prescription.notifyRefill
                           ? 'bg-purple-500/20 text-purple-300'
                           : 'bg-gray-500/20 text-gray-300'
@@ -169,14 +191,14 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-indigo-700/50">
+          <div className="flex justify-end gap-2 mt-2 sm:mt-6 pt-2 sm:pt-4 border-t border-indigo-700/50">
             <Button
               type="button"
               variant="destructive"
               onClick={handleDeleteClick}
-              className="bg-red-600 hover:bg-red-700 gap-2 cursor-pointer"
+              className="bg-red-600 hover:bg-red-700 gap-2 cursor-pointer text-xs sm:text-base px-2 sm:px-4 py-1 sm:py-2"
             >
-              <Trash2 className="h-5 w-5" />
+              <Trash2 className="h-3 w-3 sm:h-5 sm:w-5" />
               Delete
             </Button>
           </div>
@@ -184,23 +206,23 @@ export const PrescriptionDialog: React.FC<PrescriptionDialogProps> = ({
       </Dialog>
 
       <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
-        <AlertDialogContent className="bg-indigo-800/90 backdrop-blur-sm border-indigo-700">
+        <AlertDialogContent className="bg-indigo-800/90 backdrop-blur-sm border-indigo-700 max-w-[95vw] sm:max-w-md mx-4">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">
+            <AlertDialogTitle className="text-white text-lg md:text-xl">
               Are you sure?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-indigo-100">
+            <AlertDialogDescription className="text-indigo-100 text-sm">
               This will permanently delete {prescription.name}. This action
               cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-indigo-600 text-white hover:bg-indigo-700">
+            <AlertDialogCancel className="bg-indigo-600 text-white hover:bg-indigo-700 text-sm md:text-base">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
-              className="bg-red-600 text-white hover:bg-red-700 gap-2 cursor-pointer"
+              className="bg-red-600 text-white hover:bg-red-700 gap-2 cursor-pointer text-sm md:text-base"
             >
               Delete
             </AlertDialogAction>
