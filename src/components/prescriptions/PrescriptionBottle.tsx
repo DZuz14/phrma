@@ -66,6 +66,12 @@ interface DetailProps {
   className?: string;
 }
 
+/**
+ * Detail Component
+ *
+ * This component displays a label and value pair with optional divider
+ * and custom styling. For use in PrescriptionBottle component only.
+ */
 const Detail = ({
   label,
   value,

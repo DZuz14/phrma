@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowUp } from 'lucide-react';
 
+const SCROLL_THRESHOLD = 300;
+
 /**
  * ScrollToTop Component
  * A button that appears when scrolling down and smoothly scrolls to top when clicked
@@ -12,7 +14,7 @@ export const ScrollToTop: React.FC = () => {
   // Handle scroll visibility
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300);
+      setShowScrollTop(window.scrollY > SCROLL_THRESHOLD);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -31,6 +33,7 @@ export const ScrollToTop: React.FC = () => {
           ? 'opacity-100 translate-y-0'
           : 'opacity-0 translate-y-4 pointer-events-none'
       }`}
+      aria-label="Scroll to top"
     >
       <ArrowUp className="h-5 w-5" />
     </Button>

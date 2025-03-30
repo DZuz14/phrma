@@ -1,10 +1,15 @@
-import { Prescriptions } from '@/components';
+import type { FC } from 'react';
+import { Prescriptions, ErrorBoundary } from '@/components';
 
 /**
  * Main App Component
  */
-const App: React.FC = () => {
-  return <Prescriptions />;
+const App: FC = () => {
+  return (
+    <ErrorBoundary>
+      <Prescriptions />
+    </ErrorBoundary>
+  );
 };
 
 export default App;
